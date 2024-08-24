@@ -1,4 +1,4 @@
-# Stable Diffusion on AWS - Deployment Guide
+# Stable Diffusion on AWS - Deployment Guide SD UI
 
 ### **Overview**
 This guide provides detailed instructions to deploy a Stable Diffusion Proof of Concept (POC) product on AWS. The deployment involves setting up the Stable Diffusion WebUI, deploying middleware, and configuring APIs. The deployed solution can be accessed either through a user interface (UI) or directly via API calls.
@@ -154,4 +154,107 @@ Below is a summary of the permissions available for different roles:
 | `inference:all`           | Inference    | Manage inference jobs                            |
 | `checkpoint:all`          | Model Files  | Manage model files, including creating and deleting |
 | `train:all`               | Training     | Manage training jobs                             |
+
+
+### Stable Diffusion on AWS - Deployment Guide Comfy UI
+Before you begin deploying the solution, it is recommended to review the information in this guide, including architecture diagrams and region support. Then, follow the instructions below to configure and deploy the solution to your account.
+
+**Estimated Deployment Time:** Approximately 20 minutes
+
+---
+
+## Deployment Overview
+
+Deploying this solution on AWS, specifically the ComfyUI part, involves the following processes:
+
+1. **Step 1:** Deploy the solution's middleware.
+2. **Step 2:** Deploy the ComfyUI frontend.
+
+After deployment, refer to the [ComfyUI User Guide](../user-guide/ComfyUI/inference.md) for detailed usage instructions.
+
+---
+
+## Deployment Steps
+
+### Step 1: Deploy the Solution Middleware
+This step uses an automated Amazon CloudFormation template to deploy the solution's middleware on AWS.
+
+1. **Login to AWS Console:**  
+   Go to the [AWS Management Console](https://console.aws.amazon.com/) and click the link [Extension for Stable Diffusion on AWS](https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=stable-diffusion-aws&templateURL=https://aws-gcr-solutions.s3.amazonaws.com/stable-diffusion-aws-extension-github-mainline/latest/custom-domain/Extension-for-Stable-Diffusion-on-AWS.template.json).
+
+2. **Select Region:**  
+   By default, the template will launch in the region you're currently logged into. If you need to deploy in a specific AWS region, choose it from the region dropdown in the console navigation bar.
+
+3. **Confirm Template URL:**  
+   On the **Create Stack** page, verify that the Amazon S3 URL textbox displays the correct template URL, then click **Next**.
+
+4. **Specify Stack Details:**  
+   On the **Specify Stack Details** page, assign a unique name for your solution stack within the account, following naming conventions. Refer to the table below for deployment parameters. Click **Next**.
+
+   | Parameter         | Description                                                  | Recommendation           |
+   |:------------------|:-------------------------------------------------------------|:-------------------------|
+   | APIEndpointType    | Defines the type of API if API calls are needed. Options are REGIONAL, PRIVATE, or EDGE. | Default: REGIONAL        |
+   | Bucket            | Enter a valid new S3 bucket name (or use an existing bucket used for the ComfyUI part of this solution). |                         |
+   | email             | Enter a correct email address to receive future notifications. |                         |
+   | SdExtensionApiKey | Enter a 20-character alphanumeric string. | Default: "09876543210987654321" |
+   | LogLevel          | Choose your preferred Lambda Log level. | Default: ERROR          |
+
+5. **Configure Stack Options:**  
+   On the **Configure Stack Options** page, select **Next**.
+
+6. **Review and Deploy:**  
+   On the **Review** page, confirm the settings. Ensure you check the box to acknowledge that the template will create Amazon Identity and Access Management (IAM) resources, along with any other required features. Click **Submit** to deploy the stack.
+
+7. **Monitor Stack Status:**  
+   In the AWS CloudFormation console, monitor the status column for the stack. You should see the status **CREATE_COMPLETE** within approximately 15 minutes.
+
+   !!! tip "Tip"
+   Please check your email inbox for a message with the subject “AWS Notification - Subscription Confirmation.” Click the “Confirm subscription” link in the email and follow the instructions to complete the subscription.
+
+---
+
+### Step 2: Deploy the ComfyUI Frontend
+
+This step installs the ComfyUI frontend, which includes a built-in Chinese localization plugin, workflow publishing to the cloud, and other user-friendly interface enhancements. This is also done via an automated Amazon CloudFormation template.
+
+1. **Login to AWS Console:**  
+   Go to the [AWS Management Console](https://console.aws.amazon.com/), click **Create Stack** in the top right corner, and select **With new resources (standard)** to start creating a stack.
+
+2. **Choose Template:**  
+   On the **Create Stack** page, select **Choose an existing template**. In the **Specify template** section, choose **Amazon S3 URL** and enter this [deployment template link](https://aws-gcr-solutions.s3.amazonaws.com/extension-for-stable-diffusion-on-aws/comfy.yaml), then click **Next**.
+
+3. **Specify Stack Details:**  
+   On the **Specify Stack Details** page, assign a unique name for your solution stack within the account, following naming conventions. Deployment parameters are explained below. Click **Next**.
+
+   !!! tip "Tip"
+   The EC2 Key Pair is mainly used for remote connection to the EC2 instance. If you do not have an existing one, refer to the [official guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html) to create one.
+
+   | Parameter          | Description                                             | Recommendation                  |
+   |:-------------------|:--------------------------------------------------------|:---------------------------------|
+   | InstanceType       | The EC2 instance type to be deployed.                   | For inference involving animations or videos, use G6 or G5 instances. |
+   | NumberOfInferencePorts | Number of inference environments.                    | Recommended: No more than 5     |
+   | StackName          | The stack name from the successful deployment in Step 1.|                                 |
+   | keyPairName        | Choose an existing EC2 Key Pair.                        |                                 |
+
+4. **Configure Stack Options:**  
+   On the **Configure Stack Options** page, select **Next**.
+
+5. **Review and Deploy:**  
+   On the **Review** page, confirm the settings. Ensure you check the box to acknowledge that the template will create Amazon Identity and Access Management (IAM) resources, along with any other required features. Click **Submit** to deploy the stack.
+
+6. **Monitor Stack Status:**  
+   In the AWS CloudFormation console, monitor the status column for the stack. You should see the status **CREATE_COMPLETE** within approximately 3 minutes.
+
+7. **Access ComfyUI Frontend:**  
+   Select the successfully deployed stack, open **Outputs**, and click the link corresponding to **Designer** to open the deployed ComfyUI frontend. You might need to disable VPN or access the Designer without the 10000 port for proper access. **NumberOfInferencePortsStart** represents the starting port of the inference environment address path. The port address increases sequentially based on the deployment quantity. For example, if **NumberOfInferencePorts** is set to 2, the accessible inference environment addresses will be:
+   - http://EC2-address:10001
+   - http://EC2-address:10002
+
+   | Role              | Function                                                    | Port                                      |
+   |:------------------|:------------------------------------------------------------|:------------------------------------------|
+   | Lead Artist / Workflow Manager | Can install new custom nodes, debug workflows on EC2, publish workflows and environments to Amazon SageMaker. It can also call SageMaker resources and select published workflows for inference verification. | http://EC2-address                         |
+   | General Artist    | Can enter the interface from this port, select the published workflows by the lead artist, modify inference parameters, and check “Prompt on AWS” to call Amazon SageMaker for inference. | When **NumberOfInferencePorts** is set to 3, the accessible inference environment addresses will be:<ul><li>http://EC2-address:10001</li><li>http://EC2-address:10002</li><li>http://EC2-address:10003</li></ul>|
+
+   !!! tip "Tip"
+   After deployment, wait a moment. If you see a message stating “Comfy is Initializing or Starting” when opening the link, it means the backend is initializing the ComfyUI. Please wait a little longer and refresh the page to confirm.
 
