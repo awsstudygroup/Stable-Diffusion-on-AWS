@@ -1,0 +1,57 @@
+INHERIT: ./mkdocs.base.yml
+docs_dir: en
+site_dir: ./site/en
+theme:
+  language: en
+nav:
+  - Implementation Guide:
+    - Solution Overview:
+        - Overview: index.md
+        - Features and benefits: solution-overview/features-and-benefits.md
+        #- Use cases: solution-overview/use-cases.md
+       # - Concepts and definitions: solution-overview/concepts.md
+    - Cost: cost.md
+    - Architecture Overview:
+        - Architecture diagram: architecture-overview/architecture.md
+       # - AWS Well-Architected design considerations: architecture-overview/design-considerations.md
+        - Architecture details: architecture-overview/architecture-details.md
+
+    - Plan your deployment:
+        - Security: plan-deployment/security.md
+        - Supported regions: plan-deployment/regions.md
+        - Quotas: plan-deployment/quotas.md
+    - Deploy the solution:
+        - Permissions: deployment/permissions.md
+        - AWS CloudFormation template: deployment/template.md
+        - Deploy for SD webUI: deployment/deployment.md
+        - Deploy for ComfyUI: deployment/deployment_comfyui.md
+        - Update SD webUI: deployment/deployment_for_existing_users.md
+    #- Update the solution: update.md
+    - Uninstall the solution: uninstall.md
+    - Use the solution:
+        - Kohya Training guide: user-guide/training-guide.md
+        - SD webUI guide: 
+            - Configure API and Users Management: user-guide/webUI/multi-user.md
+            - Cloud Assets Management: user-guide/webUI/CloudAssetsManage.md
+            - txt2img guide: user-guide/webUI/txt2img-guide.md
+            - img2img guide: user-guide/webUI/img2img-guide.md
+            - controlNet guide: user-guide/webUI/controlnet-guide.md
+            - Other Extensions guide: user-guide/webUI/extensions-guide.md
+        - ComfyUI guide: user-guide/ComfyUI/inference.md
+        #- Checkpoint Merger guide: user-guide/checkpoint-merge-guide.md
+    - Developer guide:
+        - Source code: developer-guide/source.md
+        - API Access Restriction: developer-guide/access.md
+        - API Upload Checkpoint Process: developer-guide/api_upload_ckpt.md
+        - API Inference Process: developer-guide/api_inference_process.md
+        - API Inference Debugger: developer-guide/api_debugger.md
+        - API Authentication: developer-guide/api_authentication.md
+        - API Details: developer-guide/api.md
+        - Custom Container: developer-guide/byoc.md
+    - Troubleshooting: troubleshooting.md
+    - FAQ: faq.md
+    - Revisions: revisions.md
+    #- Contributors: contributors.md
+    - Notices: notices.md
+
+

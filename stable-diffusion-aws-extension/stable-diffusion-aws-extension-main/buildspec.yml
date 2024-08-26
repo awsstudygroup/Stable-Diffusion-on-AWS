@@ -1,0 +1,110 @@
+version: 0.2
+
+env:
+  shell: bash
+  exported-variables:
+    - BSS_IMAGE_ASSET_REPOSITORY_NAME
+    - BUILD_VERSION
+    - CN_ASSETS
+    - GLOBAL_ASSETS
+    - ECR_REPOS
+    - CN_ECR_REPOS
+    - TAG_NUMBER
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - echo "nothing to do in install"
+  pre_build:
+    commands:
+      - echo "nothing to do in install"
+      - cd infrastructure
+      - chmod +x ./run-all-tests.sh && ./run-all-tests.sh
+      - echo "Installing dependencies and executing unit tests completed `date`"
+      - export BSS_IMAGE_ASSET_REPOSITORY_NAME='stable-diffusion-aws-extension'
+      - export TAG_NAME=$(curl -s https://api.github.com/repos/awslabs/stable-diffusion-aws-extension/tags | jq -r '.[0].name')
+      # Retry logic for fetching TAG_NAME
+      - |-
+        MAX_RETRIES=100
+        RETRY_COUNT=0
+        until [[ ! -z "$TAG_NAME" || $RETRY_COUNT -eq $MAX_RETRIES ]]
+        do
+          export TAG_NAME=$(curl -s https://api.github.com/repos/awslabs/stable-diffusion-aws-extension/tags --header "authorization: Bearer $GITHUB_TOKEN" | jq -r '.[0].name')
+          if [[ -z "$TAG_NAME" ]]; then
+            let RETRY_COUNT=RETRY_COUNT+1
+            echo "TAG_NAME is empty, retrying ($RETRY_COUNT/$MAX_RETRIES)..."
+            sleep 5 # wait for 5 seconds before retrying
+          fi
+        done
+
+        if [[ -z "$TAG_NAME" ]]; then
+          echo "Failed to fetch TAG_NAME after $MAX_RETRIES attempts."
+          exit 1
+        fi
+      - export BUILD_VERSION=${TAG_NAME}-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - export CN_ASSETS='cn/'
+      - export TAG_NUMBER="${TAG_NAME#v}"
+      - |-
+        set -euxo pipefail
+        __dir="${CODEBUILD_SRC_DIR}/deployment"
+        function join_by { local IFS="$1"; shift; echo "$*"; }
+        export CN_ECR_REPOS=$(join_by , `cat "${__dir}/cn-ecr-repos"`)
+      - export GLOBAL_ASSETS='custom-domain/,default/'
+  build:
+    commands:
+      - echo "Starting build the public ECR"
+      - cd ../build_scripts
+      - json_output=$(aws sts assume-role  --role-arn "$AWS_ASSET_PUBLISH_ROLE"  --role-session-name "asset-publishing-role"  --duration-seconds "3600"  2>&1)
+      - set +x
+      - export AWS_ACCESS_KEY_ID=$(echo "${json_output}" | jq --raw-output ".Credentials[\"AccessKeyId\"]")
+      - export AWS_SECRET_ACCESS_KEY=$(echo "${json_output}" | jq --raw-output ".Credentials[\"SecretAccessKey\"]")
+      - export AWS_SESSION_TOKEN=$(echo "${json_output}" | jq --raw-output ".Credentials[\"SessionToken\"]")
+      - echo "BUILD VERSION is ${BUILD_VERSION}"
+      - echo "export const ESD_VERSION:string = '${BUILD_VERSION}';" > ../infrastructure/src/shared/version.ts
+      - echo "export const ESD_COMMIT_ID:string = '${CODEBUILD_RESOLVED_SOURCE_VERSION}';" > ../infrastructure/src/shared/commit.ts
+      - echo "checking the updated image name"
+      - cat ../infrastructure/src/shared/version.ts
+      - sed -i "s/client_api_version = \"[0-9.]*\"/client_api_version = \"$TAG_NUMBER\"/" ../aws_extension/cloud_api_manager/api.py
+      - echo ""
+      - sed -i "s/sd_dev/sd_$BUILD_VERSION/" ../workshop/ec2.yaml
+      - sed -i "s/ESD_VERSION=dev/ESD_VERSION=$BUILD_VERSION/" ../workshop/ec2.yaml
+      - sed -i "s/WebUiEC2Instance/WebUiEC2Instance${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}/" ../workshop/ec2.yaml
+      - aws s3 cp --region us-east-1 ../workshop/ec2.yaml s3://aws-gcr-solutions/extension-for-stable-diffusion-on-aws/sd_dev.yaml --content-type text/yaml --acl public-read
+      - aws s3 cp --region us-east-1 ../workshop/ec2.yaml s3://aws-gcr-solutions/extension-for-stable-diffusion-on-aws/sd_$BUILD_VERSION.yaml --content-type text/yaml --acl public-read
+      - echo ""
+      - sed -i "s/comfy_dev/comfy_$BUILD_VERSION/" ../workshop/comfy.yaml
+      - sed -i "s/ESD_VERSION=dev/ESD_VERSION=$BUILD_VERSION/" ../workshop/comfy.yaml
+      - sed -i "s/ComfyEC2Dev/ComfyEC2${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}/" ../workshop/comfy.yaml
+      - sed -i "s/ApiGwResource/ApiGwResource${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}/" ../workshop/comfy.yaml
+      - aws s3 cp --region us-east-1 ../workshop/comfy.yaml s3://aws-gcr-solutions/extension-for-stable-diffusion-on-aws/comfy_dev.yaml --content-type text/yaml --acl public-read
+      - aws s3 cp --region us-east-1 ../workshop/comfy.yaml s3://aws-gcr-solutions/extension-for-stable-diffusion-on-aws/comfy_$BUILD_VERSION.yaml --content-type text/yaml --acl public-read
+      - echo ""
+      - unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+      - set -x
+      - echo "Starting build `date` in `pwd`"
+      - cd ../deployment
+      - chmod +x ./build-s3-dist.sh && ./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $BUILD_VERSION
+      - echo "Build completed `date`"
+      - echo "Starting open-source-dist `date` in `pwd`"
+      - chmod +x ./build-open-source-dist.sh && ./build-open-source-dist.sh $SOLUTION_NAME
+      - echo "Open Source Dist completed `date`"
+
+  post_build:
+    commands:
+      - echo "Retrieving next stage buildspec `date` in `pwd`"
+      - aws s3 cp s3://${SOLUTIONS_BUILD_ASSETS_BUCKET:-aws-solutions-build-assets}/changelog-spec.yml ../buildspec.yml
+      - echo "Retrieving next stage buildspec complete"
+      - echo "Post build completed on `date`"
+
+artifacts:
+  files:
+    - deployment/**/*
+    - infrastructure/**/*
+    - middleware_api/**/*
+    - .gitignore
+    - sonar-project.properties
+    - buildspec.yml
+    - CHANGELOG.md
+    - .cfnnag_*

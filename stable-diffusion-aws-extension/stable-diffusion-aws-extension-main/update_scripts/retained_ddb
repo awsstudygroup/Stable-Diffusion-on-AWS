@@ -1,0 +1,7 @@
+CheckpointTable
+DatasetInfoTable
+DatasetItemTable
+MultiUserTable
+SDEndpointDeploymentJobTable
+SDInferenceJobTable
+TrainingTable
