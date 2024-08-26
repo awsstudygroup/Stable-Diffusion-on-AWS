@@ -3,6 +3,8 @@
 ### **Overview**
 This guide provides detailed instructions to deploy a Stable Diffusion Proof of Concept (POC) product on AWS. The deployment involves setting up the Stable Diffusion WebUI, deploying middleware, and configuring APIs. The deployed solution can be accessed either through a user interface (UI) or directly via API calls.
 
+![Architecture](/design/architecture.jpg)
+
 ### **Estimated Deployment Time**
 Approximately 20 minutes
 
