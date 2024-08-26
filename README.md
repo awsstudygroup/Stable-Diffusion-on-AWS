@@ -156,7 +156,7 @@ Below is a summary of the permissions available for different roles:
 | `train:all`               | Training     | Manage training jobs                             |
 
 
-### Stable Diffusion on AWS - Deployment Guide Comfy UI
+# Stable Diffusion on AWS - Deployment Guide Comfy UI
 Before you begin deploying the solution, it is recommended to review the information in this guide, including architecture diagrams and region support. Then, follow the instructions below to configure and deploy the solution to your account.
 
 **Estimated Deployment Time:** Approximately 20 minutes
