@@ -18,7 +18,7 @@
 
 ### Example
 
-![A square ceramic tile with a vintage design. The tile has a central eight-pointed star in creamy white, surrounded by light beige abstract shapes in the corners. The background is warm terracotta. The design is flat and minimalist, with clean lines. The tile is displayed on a plain white background, with no shadows or reflections.](image%20(5).png)
+![A square ceramic tile with a vintage design. The tile has a central eight-pointed star in creamy white, surrounded by light beige abstract shapes in the corners. The background is warm terracotta. The design is flat and minimalist, with clean lines. The tile is displayed on a plain white background, with no shadows or reflections.](/image-5.png)
 
 #### Parameters
 
