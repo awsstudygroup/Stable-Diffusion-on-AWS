@@ -1,7 +1,7 @@
-# Stable Diffusion on AWS - Deployment Guide SD UI
+# Stable Diffusion on AWS - Deployment Guide
 
 ### **Overview**
-This guide provides detailed instructions to deploy a Stable Diffusion Proof of Concept (POC) product on AWS. The deployment involves setting up the Stable Diffusion WebUI, deploying middleware, and configuring APIs. The deployed solution can be accessed either through a user interface (UI) or directly via API calls.
+This guide provides detailed instructions for deploying a Stable Diffusion Proof of Concept (POC) product on AWS. The deployment involves setting up the Stable Diffusion WebUI, deploying middleware, and configuring APIs. The deployed solution can be accessed either through a user interface (UI) or directly via API calls.
 
 ![Architecture](/arc/architecture.jpg)
 
@@ -9,12 +9,12 @@ This guide provides detailed instructions to deploy a Stable Diffusion Proof of 
 Approximately 20 minutes
 
 ### **Prerequisites**
-- **Linux-Based Computer**: A Linux machine is required for initial setup and deployment commands.
+- **Linux-Based Computer**: Required for initial setup and deployment commands.
 - **AWS Account**: Ensure you have an active AWS account with permissions to create resources like EC2 instances, S3 buckets, IAM roles, and CloudFormation stacks.
 - **AWS CLI**: Install and configure the AWS Command Line Interface (CLI) on your Linux machine to interact with AWS services.
 
 ### **Deployment Summary**
-This deployment is divided into the following steps:
+The deployment is divided into the following steps:
 - **Step 0**: Deploy the Stable Diffusion WebUI (if using the UI interface).
 - **Step 1**: Deploy the middleware using AWS CloudFormation.
 - **Step 2**: Configure the API URL and API Token to link the frontend with backend resources.
@@ -157,8 +157,10 @@ Below is a summary of the permissions available for different roles:
 | `checkpoint:all`          | Model Files  | Manage model files, including creating and deleting |
 | `train:all`               | Training     | Manage training jobs                             |
 
+---
 
-# Stable Diffusion on AWS - Deployment Guide Comfy UI
+# Stable Diffusion on AWS - Deployment Guide ComfyUI
+
 Before you begin deploying the solution, it is recommended to review the information in this guide, including architecture diagrams and region support. Then, follow the instructions below to configure and deploy the solution to your account.
 
 **Estimated Deployment Time:** Approximately 20 minutes
@@ -172,13 +174,16 @@ Deploying this solution on AWS, specifically the ComfyUI part, involves the foll
 1. **Step 1:** Deploy the solution's middleware.
 2. **Step 2:** Deploy the ComfyUI frontend.
 
-After deployment, refer to the [ComfyUI User Guide](../user-guide/ComfyUI/inference.md) for detailed usage instructions.
+After deployment, refer to the [ComfyUI User Guide](../user-guide/ComfyUI/inference.md) for detailed usage
+
+ instructions.
 
 ---
 
 ## Deployment Steps
 
 ### Step 1: Deploy the Solution Middleware
+
 This step uses an automated Amazon CloudFormation template to deploy the solution's middleware on AWS.
 
 1. **Login to AWS Console:**  
