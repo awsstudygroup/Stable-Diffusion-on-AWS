@@ -49,7 +49,7 @@ Seed: -1
 **Lighting**: shadows, reflections, glare, dramatic lighting
 ### Example
 
-![](image%20(6).png)
+![](./image-6.png)
 
 #### Parameters
 
@@ -80,7 +80,7 @@ Style: 3D effects, rustic, grungy.
 Lighting: shadows, reflections, glare, dramatic lighting.
 ### Example
 
-![](image%20(8).png)
+![](./image-8.png)
 
 #### Parameters
 
@@ -109,7 +109,7 @@ Seed: -1
 **Style**: 3D effects, highly detailed, textured, rustic, grungy.
 **Lighting**: shadows, reflections, glare, dramatic lighting.
 
-![](image%20(7).png)
+![](./image-7.png)
 
 #### Parameters
 
@@ -141,8 +141,12 @@ Color Palette: neon colors, warm tones, grays, and muted colors.
 Style: 3D effects, highly detailed, textured, rustic, grungy.
 Lighting: shadows, reflections, glare, dramatic lighting.
 
-![](image%20(9).png)
-![](image%20(10).png)
+![](./image-9.png)
+
+
+
+![](./image-10.png)
+
 #### Parameters
 
 Checkpoint: [majicmixRealistic_v7.safetensors](https://huggingface.co/GreenGrape/231209/blob/main/majicmixRealistic_v7.safetensors)
@@ -173,7 +177,7 @@ Color Palette: neon colors, warm tones, grays, and muted colors.
 Style: 3D effects, highly detailed, textured, rustic, grungy.
 Lighting: shadows, reflections, glare, dramatic lighting.
 
-![](image%20(11).png)
+![](./image-11.png)
 
 #### Parameters
 
@@ -205,7 +209,7 @@ Color Palette: Neon colors, bright primary colors, harsh contrasts, overly dark 
 Style: Rustic, vintage, eclectic, or overly ornate styles.
 Lighting: Harsh, direct lighting, strong shadows, reflections, or cold, uninviting lighting.
 
-![](image%20(12).png)
+![](./image-12.png)
 
 #### Parameters
 
@@ -237,7 +241,7 @@ Color Palette: Neon colors, bright primary colors, harsh contrasts, overly dark 
 Style: Rustic, vintage, eclectic, or overly ornate styles.
 Lighting: Harsh, direct lighting, strong shadows, reflections, or cold, uninviting lighting.
 
-![](image%20(13).png)
+![](./image-13.png)
 
 #### Parameters
 
@@ -269,7 +273,7 @@ Height: 512
 **Style:** Rustic, vintage, eclectic, or overly ornate styles.  
 **Lighting:** Harsh, artificial lighting, strong shadows, reflections, or cold, uninviting lighting.
 
-![](image%20(14).png)
+![](./image-14.png)
 
 #### Parameters
 
@@ -283,34 +287,3 @@ Seed: -1
 Width: 512
 Height: 512
 
-## 10. Ngói
-
-### Positive prompt
-
-Subject: 
-Design: 
-Color Palette: 
-Style: 
-Lighting: 
-
-### Negative prompt
-
-Subject: 
-Design: 
-Color Palette: 
-Style: 
-Lighting: 
-
-![]()
-
-#### Parameters
-
-Checkpoint:
-Sampling method:
-Sampling steps: 
-Batch count: 1
-Batch size: 1
-CFG Scale: 7
-Seed: -1
-Width: 512
-Height: 512
